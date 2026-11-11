@@ -37,6 +37,7 @@ $parts  = $path === '' ? [] : explode('/', $path);
 $first  = $parts[0] ?? 'home';
 $second = $parts[1] ?? '';
 $third  = $parts[2] ?? '';
+$fourth = $parts[3] ?? '';
 
 try {
     switch ($first) {
@@ -118,11 +119,11 @@ try {
                     'delete'  => $admin->deleteProduct(),
                     'restore' => $admin->restoreProduct(),  // POST: batalkan arsip / aktifkan produk
                     'update'  => $admin->updateProduct(),   // POST: simpan perubahan
-                    default   => (function () use ($admin, $third): void {
+                    default   => (function () use ($admin, $third, $fourth): void {
                         // /admin/products/edit/{id}
-                        if (str_starts_with($third, 'edit')) {
+                        if ($third === 'edit') {
                             // Ambil ID dari segmen keempat URL: /admin/products/edit/5
-                            $productId = (int) ($GLOBALS['parts'][3] ?? 0);
+                            $productId = (int) $fourth;
                             $admin->editProduct($productId);
                         } else {
                             $admin->products();

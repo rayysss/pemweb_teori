@@ -1,4 +1,7 @@
 @media (max-width: 991px) {
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
     .header-inner {
         gap: 24px;
     }
@@ -75,7 +78,10 @@
         font-size: 11px;
     }
     .header-cart {
-        font-size: 0;
+        font-size: 14px;
+    }
+    .cart-label {
+        display: none;
     }
     .header-cart span {
         font-size: 10px;

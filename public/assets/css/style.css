@@ -61,6 +61,11 @@ img {
 /* Kontainer pembatas lebar konten dengan batas maksimal 1200px */
 .container {
     max-width: 1200px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 /* Animasi scroll halaman yang halus ketika link anchor (#) diklik */
@@ -146,8 +151,15 @@ html {
 }
 
 .main-nav a:hover::after,
-.main-nav a:focus-visible::after {
+.main-nav a:focus-visible::after,
+.main-nav a.nav-active::after {
     right: 0;
+}
+
+/* Warna tautan aktif */
+.main-nav a.nav-active {
+    color: var(--blue);
+    font-weight: 600;
 }
 
 /* Grup aksi di kanan atas (Pencarian, Akun, Keranjang) */
@@ -179,6 +191,11 @@ html {
 .header-cart:hover {
     color: var(--blue);
     transform: translateY(-1px);
+}
+
+/* Label teks "Keranjang" — disembunyikan di mobile kecil agar ikon + badge lebih bersih */
+.cart-label {
+    display: inline;
 }
 
 /* Lingkaran badge penghitung jumlah barang di keranjang */
@@ -297,6 +314,11 @@ html {
     cursor: not-allowed;
     transform: none !important;
     box-shadow: none !important;
+}
+
+/* Utilitas lebar penuh — digunakan pada tombol submit form */
+.btn-zora.w-100 {
+    width: 100%;
 }
 
 .btn-zora span {
@@ -624,6 +646,19 @@ html {
    BAGIAN 8: FILTER & PENCARIAN KATALOG (.filter-bar, .search-field)
    Bar pencarian, dropdown kategori, dan pengurutan harga di katalog produk.
    -------------------------------------------------------------------------- */
+/* Banner header halaman katalog produk */
+.page-banner {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding: 48px 0 44px;
+}
+
+.page-banner p {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 6px 0 0;
+}
+
 .catalog-section {
     padding: 34px 12px 80px;
 }
@@ -1230,6 +1265,38 @@ html {
    BAGIAN 14: KONTROL KHUSUS PANEL ADMIN (.admin-*)
    Tata letak formulir penambahan produk dan tombol aksi tabel admin.
    -------------------------------------------------------------------------- */
+/* Grid statistik dashboard admin (4 kartu angka) */
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.admin-stats > div {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-stats > div small {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-weight: 600;
+}
+
+.admin-stats > div strong {
+    font: 700 26px var(--display);
+    color: var(--blue);
+    letter-spacing: -1px;
+}
+
 .admin-toolbar {
     display: flex;
     justify-content: space-between;

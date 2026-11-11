@@ -6,9 +6,13 @@
 
 // Kredensial koneksi database MySQL lokal XAMPP.
 const DB_HOST = '127.0.0.1';
-const DB_NAME = 'zora';
+const DB_NAME = 'pemweb-teori';
 const DB_USER = 'root';
 const DB_PASS = '';
+
+// Aturan ongkir — satuan: Rupiah.
+const SHIPPING_FREE_THRESHOLD = 500000; // Gratis ongkir jika subtotal >= nilai ini.
+const SHIPPING_FLAT_COST      = 15000;  // Ongkir flat jika subtotal < threshold.
 
 /**
  * Menyediakan koneksi PDO tunggal (Reusable / Singleton Pattern sederhana).

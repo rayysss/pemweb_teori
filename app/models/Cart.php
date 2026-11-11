@@ -233,51 +233,66 @@ class Cart
             return;
         }
 
-        // Cari cart user yang sudah login.
-        $stmt = $pdo->prepare(
-            "SELECT id FROM carts
-             WHERE user_id = ? AND status = 'active'
-             ORDER BY id DESC LIMIT 1"
-        );
-        $stmt->execute([$userId]);
-        $userCartId = $stmt->fetchColumn();
+        // Seluruh operasi merge dibungkus dalam transaksi agar atomik.
+        $pdo->beginTransaction();
 
-        if (!$userCartId) {
-            // Tidak ada cart user → ambil alih cart guest.
+        try {
+            // Cari cart user yang sudah login.
+            $stmt = $pdo->prepare(
+                "SELECT id FROM carts
+                 WHERE user_id = ? AND status = 'active'
+                 ORDER BY id DESC LIMIT 1"
+            );
+            $stmt->execute([$userId]);
+            $userCartId = $stmt->fetchColumn();
+
+            if (!$userCartId) {
+                // Tidak ada cart user → ambil alih cart guest.
+                $pdo->prepare(
+                    "UPDATE carts SET user_id = ?, session_id = ? WHERE id = ?"
+                )->execute([$userId, session_id(), $guestCartId]);
+
+                $pdo->commit();
+                return;
+            }
+
+            // User sudah punya cart → merge item dari guest ke user cart.
+            $items = $pdo->prepare(
+                "SELECT product_id, quantity, unit_price
+                 FROM cart_items
+                 WHERE cart_id = ?"
+            );
+            $items->execute([$guestCartId]);
+
+            $insertStmt = $pdo->prepare(
+                "INSERT INTO cart_items (cart_id, product_id, quantity, unit_price)
+                 VALUES (?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE
+                    quantity = quantity + VALUES(quantity)"
+            );
+
+            foreach ($items->fetchAll() as $item) {
+                $insertStmt->execute([
+                    $userCartId,
+                    $item['product_id'],
+                    $item['quantity'],
+                    $item['unit_price'],
+                ]);
+            }
+
+            // Tandai cart guest sebagai abandoned.
             $pdo->prepare(
-                "UPDATE carts SET user_id = ?, session_id = ? WHERE id = ?"
-            )->execute([$userId, session_id(), $guestCartId]);
+                "UPDATE carts SET status = 'abandoned' WHERE id = ?"
+            )->execute([$guestCartId]);
 
-            return;
+            $pdo->commit();
+
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            // Log error tapi jangan hentikan proses login — merge bukan operasi kritis.
+            error_log('[Cart::mergeGuestCart] ' . $e->getMessage());
         }
-
-        // User sudah punya cart → merge item dari guest ke user cart.
-        $items = $pdo->prepare(
-            "SELECT product_id, quantity, unit_price
-             FROM cart_items
-             WHERE cart_id = ?"
-        );
-        $items->execute([$guestCartId]);
-
-        $insertStmt = $pdo->prepare(
-            "INSERT INTO cart_items (cart_id, product_id, quantity, unit_price)
-             VALUES (?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE
-                quantity = quantity + VALUES(quantity)"
-        );
-
-        foreach ($items->fetchAll() as $item) {
-            $insertStmt->execute([
-                $userCartId,
-                $item['product_id'],
-                $item['quantity'],
-                $item['unit_price'],
-            ]);
-        }
-
-        // Tandai cart guest sebagai abandoned.
-        $pdo->prepare(
-            "UPDATE carts SET status = 'abandoned' WHERE id = ?"
-        )->execute([$guestCartId]);
     }
 }

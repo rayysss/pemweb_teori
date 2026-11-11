@@ -37,29 +37,34 @@
         <a href="<?= base_url('products') ?>">Reset filter</a>
     </div>
 
-    <div class="product-grid">
-        <?php foreach($products as $product): ?>
-            <article class="product-card">
-                <a class="product-image" href="<?= base_url('products/'.$product['slug']) ?>">
-                    <img src="<?= e(product_image($product['image_url'])) ?>" alt="<?= e($product['name']) ?>">
-                    <?php if($product['tag']): ?>
-                        <span class="product-tag"><?= e($product['tag']) ?></span>
-                    <?php endif; ?>
-                </a>
-                <div class="product-info">
-                    <small><?= e($product['category_name']??'Electronics') ?></small>
-                    <a class="product-name" href="<?= base_url('products/'.$product['slug']) ?>"><?= e($product['name']) ?></a>
-                    <strong><?= rupiah($product['price']) ?></strong>
-                </div>
-            </article>
-        <?php endforeach; ?>
-    </div>
-
-    <?php if(!$products): ?>
+    <?php if (!$products): ?>
         <div class="empty-state compact">
             <h3>Produk belum ditemukan</h3>
             <p>Coba kata kunci atau kategori yang berbeda.</p>
             <a href="<?= base_url('products') ?>" class="text-link">Lihat semua produk →</a>
+        </div>
+    <?php else: ?>
+        <div class="product-grid">
+            <?php foreach ($products as $product): ?>
+                <article class="product-card">
+                    <a class="product-image" href="<?= base_url('products/' . $product['slug']) ?>">
+                        <img src="<?= e(product_image($product['image_url'])) ?>"
+                             alt="<?= e($product['name']) ?>"
+                             loading="lazy">
+                        <?php if ($product['tag']): ?>
+                            <span class="product-tag"><?= e($product['tag']) ?></span>
+                        <?php endif; ?>
+                    </a>
+                    <div class="product-info">
+                        <small><?= e($product['category_name'] ?? 'Electronics') ?></small>
+                        <a class="product-name"
+                           href="<?= base_url('products/' . $product['slug']) ?>">
+                           <?= e($product['name']) ?>
+                        </a>
+                        <strong><?= rupiah($product['price']) ?></strong>
+                    </div>
+                </article>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
 </section>

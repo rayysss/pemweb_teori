@@ -352,8 +352,12 @@ class AdminController
             $errors[] = 'Harga pembanding tidak valid.';
         }
 
-        if ($categoryInput !== '' && ($categoryId === false || !Category::find((int) $categoryId))) {
-            $errors[] = 'Kategori produk tidak valid.';
+        if ($categoryInput !== '') {
+            if ($categoryId === false || $categoryId === null) {
+                $errors[] = 'Kategori produk tidak valid.';
+            } elseif (!Category::find($categoryId)) {
+                $errors[] = 'Kategori produk tidak valid.';
+            }
         }
 
         if ($data['image_url'] !== '' && !$this->validImageUrl($data['image_url'])) {

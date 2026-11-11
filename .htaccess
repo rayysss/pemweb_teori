@@ -1,8 +1,18 @@
 Options -Indexes
 <IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteRule ^(app|config|storage)(/|$) - [F,L,NC]
+    RewriteEngine On
+
+    # Blokir akses langsung ke folder sensitif.
+    RewriteRule ^(app|config|storage)(/|$) - [F,L,NC]
+
+    # Jika file atau direktori nyata ada (misal public/assets/), layani langsung.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Arahkan semua request lain ke front controller di public/.
+    RewriteRule ^(.*)$ public/index.php?url=$1 [QSA,L]
 </IfModule>
+
 <FilesMatch "^(README\.md|zora\.sql)$">
-  Require all denied
+    Require all denied
 </FilesMatch>

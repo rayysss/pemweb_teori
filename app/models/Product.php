@@ -185,24 +185,37 @@ class Product
      */
     public static function update(int $id, array $data): void
     {
-        $stmt = db()->prepare(
-            "UPDATE products SET
-                category_id      = ?,
-                name             = ?,
-                sku              = ?,
-                description      = ?,
-                price            = ?,
-                compare_at_price = ?,
-                stock            = ?,
-                color            = ?,
-                tag              = ?,
-                image_url        = ?,
-                status           = ?,
-                is_featured      = ?
-             WHERE id = ?"
-        );
+        // Perbarui slug hanya jika nama berubah dari nama yang tersimpan.
+        $existing = self::find($id);
+        $newSlug  = null;
 
-        $stmt->execute([
+        if ($existing && $existing['name'] !== $data['name']) {
+            $baseSlug = slugify($data['name']);
+
+            // uniqueSlug harus mengecualikan slug produk itu sendiri agar tidak
+            // menghasilkan suffix jika nama dikembalikan ke nilai semula.
+            $newSlug = self::uniqueSlugExcluding($baseSlug, $id);
+        }
+
+        $slugSql = $newSlug !== null ? ', slug = ?' : '';
+
+        $sql = "UPDATE products SET
+                    category_id      = ?,
+                    name             = ?,
+                    sku              = ?,
+                    description      = ?,
+                    price            = ?,
+                    compare_at_price = ?,
+                    stock            = ?,
+                    color            = ?,
+                    tag              = ?,
+                    image_url        = ?,
+                    status           = ?,
+                    is_featured      = ?
+                    {$slugSql}
+                WHERE id = ?";
+
+        $params = [
             $data['category_id'] ?: null,
             $data['name'],
             $data['sku'],
@@ -215,8 +228,15 @@ class Product
             $data['image_url'],
             $data['status'],
             !empty($data['is_featured']) ? 1 : 0,
-            $id,
-        ]);
+        ];
+
+        if ($newSlug !== null) {
+            $params[] = $newSlug;
+        }
+
+        $params[] = $id;
+
+        db()->prepare($sql)->execute($params);
     }
 
     /**
@@ -252,10 +272,22 @@ class Product
      */
     private static function uniqueSlug(string $baseSlug): string
     {
+        return self::uniqueSlugExcluding($baseSlug, 0);
+    }
+
+    /**
+     * Membuat slug unik, mengecualikan ID produk tertentu (untuk keperluan update).
+     *
+     * @param string $baseSlug  Slug dasar dari nama produk.
+     * @param int    $excludeId ID produk yang dikecualikan dari pengecekan duplikat.
+     * @return string
+     */
+    private static function uniqueSlugExcluding(string $baseSlug, int $excludeId): string
+    {
         $slug   = $baseSlug;
         $suffix = 2;
 
-        while (self::slugExists($slug)) {
+        while (self::slugExistsExcluding($slug, $excludeId)) {
             $slug = $baseSlug . '-' . $suffix;
             $suffix++;
         }
@@ -264,18 +296,30 @@ class Product
     }
 
     /**
-     * Memeriksa apakah slug sudah digunakan oleh produk lain.
+     * Memeriksa apakah slug sudah digunakan oleh produk lain (mengecualikan ID tertentu).
+     *
+     * @param string $slug
+     * @param int    $excludeId ID produk yang dikecualikan.
+     * @return bool
+     */
+    private static function slugExistsExcluding(string $slug, int $excludeId): bool
+    {
+        $stmt = db()->prepare(
+            "SELECT COUNT(*) FROM products WHERE slug = ? AND id != ?"
+        );
+        $stmt->execute([$slug, $excludeId]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    /**
+     * Memeriksa apakah slug sudah digunakan oleh produk manapun (tanpa pengecualian).
      *
      * @param string $slug
      * @return bool
      */
     private static function slugExists(string $slug): bool
     {
-        $stmt = db()->prepare(
-            "SELECT COUNT(*) FROM products WHERE slug = ?"
-        );
-        $stmt->execute([$slug]);
-
-        return (int) $stmt->fetchColumn() > 0;
+        return self::slugExistsExcluding($slug, 0);
     }
 }

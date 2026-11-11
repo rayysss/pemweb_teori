@@ -27,7 +27,7 @@ class Order
         }
 
         $subtotal     = Cart::subtotal();
-        $shippingCost = $subtotal >= 500000 ? 0 : 15000;
+        $shippingCost = $subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_FLAT_COST;
         $total        = $subtotal + $shippingCost;
 
         $pdo->beginTransaction();

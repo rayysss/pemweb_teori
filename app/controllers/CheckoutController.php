@@ -24,8 +24,8 @@ class CheckoutController
 
         $subtotal = Cart::subtotal();
 
-        // Aturan ongkir: Gratis ongkir jika belanja minimal Rp 500.000, selain itu Rp 15.000.
-        $shippingCost = $subtotal >= 500000 ? 0 : 15000;
+        // Aturan ongkir — nilai diambil dari konstanta di config/database.php.
+        $shippingCost = $subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_FLAT_COST;
 
         render('checkout/index', [
             'pageTitle'    => 'Checkout',
@@ -86,7 +86,7 @@ class CheckoutController
 
         $items    = Cart::items();
         $subtotal = Cart::subtotal();
-        $shippingCost = $subtotal >= 500000 ? 0 : 15000;
+        $shippingCost = $subtotal >= SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_FLAT_COST;
 
         if (!$items) {
             flash('error', 'Keranjang masih kosong.');

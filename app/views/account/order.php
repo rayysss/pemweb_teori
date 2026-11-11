@@ -1,8 +1,22 @@
+<?php
+$statusLabels = [
+    'pending'    => 'Menunggu',
+    'confirmed'  => 'Dikonfirmasi',
+    'processing' => 'Diproses',
+    'shipped'    => 'Dikirim',
+    'completed'  => 'Selesai',
+    'cancelled'  => 'Dibatalkan',
+];
+?>
 <section class="container standard-page">
     <div class="page-title">
         <span class="eyebrow">DETAIL PESANAN</span>
         <h1><?= e($order['order_number']) ?></h1>
-        <p>Status: <span class="status-pill"><?= e(ucfirst($order['order_status'])) ?></span></p>
+        <p>Status:
+            <span class="status-pill status-<?= e($order['order_status']) ?>">
+                <?= e($statusLabels[$order['order_status']] ?? ucfirst($order['order_status'])) ?>
+            </span>
+        </p>
     </div>
 
     <div class="order-detail-grid">
