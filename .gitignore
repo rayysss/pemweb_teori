@@ -1,0 +1,4 @@
+/storage/uploads/products/*
+!/storage/uploads/products/.gitkeep
+/storage/uploads/payments/*
+!/storage/uploads/payments/.gitkeep

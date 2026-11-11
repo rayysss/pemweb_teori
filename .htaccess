@@ -1,0 +1,8 @@
+Options -Indexes
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^(app|config|storage)(/|$) - [F,L,NC]
+</IfModule>
+<FilesMatch "^(README\.md|zora\.sql)$">
+  Require all denied
+</FilesMatch>

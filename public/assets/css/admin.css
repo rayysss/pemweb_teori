@@ -1,0 +1,140 @@
+.admin-page {
+    max-width: 1200px;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.admin-stats > div {
+    padding: 20px;
+    background: #f3f6fa;
+    border: 1px solid #e8edf3;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-stats small {
+    color: #6e7a87;
+    font-size: 11px;
+}
+
+.admin-stats strong {
+    font: 700 23px 'Manrope', sans-serif;
+    color: #174a82;
+}
+
+.admin-product-layout .form-card {
+    align-self: start;
+}
+
+@media (max-width: 767px) {
+    .admin-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+/* ZORA admin interaction */
+
+.admin-stats > div,
+.admin-product-list,
+.admin-product-layout .form-card {
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
+}
+
+.admin-stats > div:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 22px rgba(23, 74, 130, .08);
+}
+
+.admin-page .zora-table tbody tr {
+    transition: background-color .18s ease;
+}
+
+.admin-page .zora-table tbody tr:hover {
+    background: #f7faff;
+}
+
+.admin-page button,
+.admin-page .btn {
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.admin-page button:active,
+.admin-page .btn:active {
+    transform: scale(.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-stats > div,
+    .admin-product-list,
+    .admin-product-layout .form-card {
+        transition: none;
+    }
+}
+
+
+/* ==========================================================
+   KONTROL TOMBOL & STATUS TABEL PRODUK ADMIN
+   ========================================================== */
+
+/* Status Produk: Tulisan Hijau untuk Aktif, Merah untuk Diarsipkan */
+.status-pill.status-active {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1px solid #86efac !important;
+    font-weight: 700 !important;
+}
+
+.status-pill.status-archived {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fca5a5 !important;
+    font-weight: 700 !important;
+}
+
+/* Jarak renggang antar-tombol aksi di tabel */
+.admin-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    white-space: nowrap !important;
+}
+
+.admin-actions form {
+    margin: 0 !important;
+    display: inline-flex !important;
+}
+
+/* Tombol Edit */
+.admin-actions .btn-edit {
+    background: #174a82 !important;
+    color: #ffffff !important;
+}
+
+/* Tombol Arsipkan (Bentuk & Ukuran Sama Seperti Tombol Edit) */
+.admin-actions .btn-archive {
+    background: #475569 !important;
+    color: #ffffff !important;
+}
+
+.admin-actions .btn-archive:hover {
+    background: #334155 !important;
+}
+
+/* Tombol Batal Arsip (Warna Merah Tegas) */
+.admin-actions .btn-unarchive {
+    background: #dc2626 !important;
+    color: #ffffff !important;
+}
+
+.admin-actions .btn-unarchive:hover {
+    background: #b91c1c !important;
+}
